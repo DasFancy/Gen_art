@@ -1,0 +1,13 @@
+streamlit
+altair
+pandas
+gspread
+oauth2client
+numpy
+paramiko
+better_profanity
+markdown
+pillow
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
