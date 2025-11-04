@@ -350,6 +350,7 @@ def show_gen_art():
 
     # apply_custom_styling()
     with st.sidebar:
+        
         st.header("Controls")
         width = st.number_input("Width", 512, 4096, 1600, step=64)
         height = st.number_input("Height", 512, 4096, 1000, step=64)

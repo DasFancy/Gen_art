@@ -57,5 +57,12 @@ def apply_custom_styling():
       border-radius:0 !important;
     }
     button[kind="primary"]:hover{ background:#ff6f61 !important; color:#111 !important; }
+                
+    @media (max-width:768px){{
+      .main-title{{ font-size:20px !important; flex-direction:column; align-items:center; text-align:center; }}
+      .section-title{{ font-size:12px !important; }}
+      .corner-img{{ width:90px !important; margin:0 auto 1rem auto; display:inline-block !important; }}
+      .main-title-text{{ font-size:18px !important; line-height:1.4em; }}
+    }}
     </style>
     """, unsafe_allow_html=True)
