@@ -49,7 +49,7 @@ def get_qrng_bits_from_api(n_bits: int) -> str:
     """
     url = _resolve_base_url_from_sheet()
     if not url:
-        st.warning("QRNG URL unavailable from Google Sheet – using local PRNG.")
+        st.warning("QRNG URL unavailable – using local PRNG.")
         return _fallback_prng(n_bits)
 
     try:
