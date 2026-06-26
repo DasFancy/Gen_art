@@ -378,9 +378,23 @@ def show_gen_art():
             [data-baseweb="select"] { display: block !important; visibility: visible !important; }
             [data-baseweb="select"] > div { background:#111 !important; }
             [data-baseweb="menu"] { background:#111 !important; }
+
+            /* Stop clipping option text in the overlay select */
+            [data-baseweb="select"] > div,
+            [data-baseweb="menu"] [role="option"]{
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+            line-height: 1.6em !important;
+            }
+            /* Shrink just the select/menu font so long labels fit */
+            [data-baseweb="select"], [data-baseweb="menu"]{
+            font-size: 9px !important;
+            }
             </style>
         """, unsafe_allow_html=True)
-        overlay = st.selectbox("Choose overlay", ["None", "Stars", "Texture", "Van Gogh", "Scene"], index=0, key="overlay_select")
+
+        overlay = st.selectbox("Choose overlay", ["None", "Stars", "Grain", "VanGogh", "Scene"], index=0, key="overlay_select")
 
         generate = st.button("✨ Generate Art", type="primary")
 
