@@ -505,7 +505,7 @@ def show_gen_art():
             else:
                 provider = qrng_provider if mode == "QRNG" else prng_provider
                 with st.spinner("Painting in progress ... please wait"):
-                    img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay, animate=True)   # ← add animate=True
+                    img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay, animate=False)   # ← add animate=True
                     if overlay == "Stars":
                         img = overlay_stars(img, provider)
                     elif overlay == "Grain":
