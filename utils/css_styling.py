@@ -16,6 +16,8 @@ def apply_custom_styling():
       background-image: radial-gradient(circle at center, #1f2e3d 0%, #0f1923 100%);
       color:#fdfdfd;
     }
+    /* Hide the top-right status / running indicator */
+    [data-testid="stStatusWidget"]{ display:none !important; }            
 
     /* Keep header & sidebar visible */
     header[data-testid="stHeader"]{ display:flex !important; }

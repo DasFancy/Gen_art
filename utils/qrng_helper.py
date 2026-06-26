@@ -5,7 +5,7 @@ import streamlit as st
 def _fallback_prng(n_bits: int) -> str:
     return ''.join(str(secrets.randbits(1)) for _ in range(n_bits))
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=300, show_spinner=False)
 def _resolve_base_url_from_sheet() -> str | None:
     try:
         from google.oauth2 import service_account
