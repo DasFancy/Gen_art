@@ -133,8 +133,11 @@ def show_gen_art():
         return u, v
 
 
-    def render_flow_field(r: RandomnessProvider, p: FlowFieldParams, palette: List[Tuple[int, int, int]], coeffs=None) -> Image.Image:
+    def render_flow_field(r: RandomnessProvider, p: FlowFieldParams, palette: List[Tuple[int, int, int]], coeffs=None, animate: bool = False) -> Image.Image:
+
         progress = st.progress(0)
+        frame = st.empty() if animate else None
+        every = max(1, p.steps // 20)   # ~20 reveal frames regardless of step count
 
         W, H = p.width, p.height
         img = Image.new("RGBA", (W, H), p.bg_color + (255,))
@@ -189,6 +192,14 @@ def show_gen_art():
             x = xs / W * 2 * math.pi
             y = ys / H * 2 * math.pi
             progress.progress((step+1)/p.steps)
+
+            # Live "watch it paint itself" preview (half-size for speed)
+            if animate and (step % every == 0 or step == p.steps - 1):
+                prev = img.convert("RGB").resize((W // 2, H // 2))
+                frame.image(prev, use_container_width=True)
+
+        if animate and frame is not None:
+            frame.empty()
 
         return img
 
@@ -407,7 +418,8 @@ def show_gen_art():
 
     # Helper to make one image from a provider
 
-    def make_image_with_provider(provider: RandomnessProvider, label: str, overlay: str) -> Tuple[Image.Image, str, List[Tuple[int,int,int]], np.ndarray]:
+    def make_image_with_provider(provider: RandomnessProvider, label: str, overlay: str, animate: bool = False) -> Tuple[Image.Image, str, List[Tuple[int,int,int]], np.ndarray]:
+
         # Seed bytes for palette + provenance record
         seed_bytes = provider.get_bytes(4096)
         seed_hex = bytes_to_seed(seed_bytes)
@@ -419,7 +431,8 @@ def show_gen_art():
             img = Image.new("RGBA", (params.width, params.height), params.bg_color + (255,))
         else:
             # normal chaotic flow
-            img = render_flow_field(provider, params, palette, coeffs=coeffs)
+            img = render_flow_field(provider, params, palette, coeffs=coeffs, animate=animate)
+
 
         return img, seed_hex, palette, coeffs
 
@@ -443,7 +456,7 @@ def show_gen_art():
         params.step_size = random.choice([0.6, 0.9, 1.2, 1.6])
         params.jitter    = random.choice([0.2, 0.4, 0.7, 1.0])
         params.line_alpha = random.choice([12, 20, 30, 45])
-        overlay = random.choice(["None", "Stars", "Texture", "Van Gogh", "Scene"])
+        overlay = random.choice(["None", "Stars", "Grain", "VanGogh", "Scene"])
         generate = True   # reuse the existing generation path
 
     if generate:
@@ -493,12 +506,12 @@ def show_gen_art():
             else:
                 provider = qrng_provider if mode == "QRNG" else prng_provider
                 with st.spinner("Painting in progress ... please wait"):
-                    img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay)
+                    img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay, animate=True)   # ← add animate=True
                     if overlay == "Stars":
                         img = overlay_stars(img, provider)
-                    elif overlay == "Texture":
+                    elif overlay == "Grain":
                         img = overlay_texture(img)
-                    elif overlay == "Van Gogh":
+                    elif overlay == "VanGogh":
                         img = overlay_vangogh(img, provider, coeffs)
                     elif overlay == "Scene":
                             img = overlay_scene(img, provider, coeffs)
