@@ -19,7 +19,7 @@ from utils.css_styling import apply_custom_styling
 
 def show_gen_art():
     
-    apply_custom_styling()
+    
     class RandomnessProvider:
         def get_bytes(self, n: int) -> bytes:
             raise NotImplementedError
@@ -179,16 +179,11 @@ def show_gen_art():
             ys_m = ys[mask]
             cols = np.array(palette, dtype=np.uint8)[col_idx[mask]]
 
-            # Batch draw as short lines for motion blur effect
-            # (approximate by drawing a 1px line from prev to curr)
-            # For performance, draw in chunks
+            # Draw one point per particle with its OWN palette color.
+            # Keeps PIL's alpha-compositing buildup (the layered density look).
             alpha = p.line_alpha
-            for i in range(0, xs_m.size, 2048):
-                j = min(i + 2048, xs_m.size)
-                for (px, py, cx, cy) in zip(xs_m[i:j], ys_m[i:j],
-                                            xs_m[i:j] + 0.6, ys_m[i:j] + 0.6):
-                    r_, g_, b_ = cols[i:j][0]  # quick color pick per chunk
-                    draw.line((px, py, cx, cy), fill=(int(r_), int(g_), int(b_), alpha), width=1)
+            for px, py, (r_, g_, b_) in zip(xs_m, ys_m, cols):
+                draw.point((int(px), int(py)), fill=(int(r_), int(g_), int(b_), alpha))
 
             # Update field coords
             x = xs / W * 2 * math.pi
