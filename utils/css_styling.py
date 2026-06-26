@@ -51,18 +51,40 @@ def apply_custom_styling():
     [data-baseweb="menu"] [role="option"]{ color:#fdfdfd !important; padding:10px 12px !important; }
     [data-baseweb="menu"] [role="option"]:hover{ background:#232b36 !important; }
 
-    /* Buttons */
+    /* Buttons (primary = Generate) */
     button[kind="primary"]{
       background:#e63946 !important; color:#fff !important; border:2px solid #fff !important;
       border-radius:0 !important;
     }
     button[kind="primary"]:hover{ background:#ff6f61 !important; color:#111 !important; }
-                
-    @media (max-width:768px){{
-      .main-title{{ font-size:20px !important; flex-direction:column; align-items:center; text-align:center; }}
-      .section-title{{ font-size:12px !important; }}
-      .corner-img{{ width:90px !important; margin:0 auto 1rem auto; display:inline-block !important; }}
-      .main-title-text{{ font-size:18px !important; line-height:1.4em; }}
-    }}
+
+    /* Download / secondary buttons — THIS WAS MISSING */
+    [data-testid="stDownloadButton"] button,
+    button[kind="secondary"]{
+      background:#111 !important;
+      color:#ffcc00 !important;
+      border:2px solid #ffcc00 !important;
+      border-radius:0 !important;
+    }
+    [data-testid="stDownloadButton"] button:hover,
+    button[kind="secondary"]:hover{
+      background:#ffcc00 !important;
+      color:#111 !important;
+      border:2px solid #ffcc00 !important;
+    }
+
+    /* Make button label text inherit the button color */
+    [data-testid="stDownloadButton"] button p,
+    button[kind="secondary"] p{
+      color:inherit !important;
+    }
+
+    @media (max-width:768px){
+      .main-title{ font-size:20px !important; flex-direction:column; align-items:center; text-align:center; }
+      .section-title{ font-size:12px !important; }
+      .corner-img{ width:90px !important; margin:0 auto 1rem auto; display:inline-block !important; }
+      .main-title-text{ font-size:18px !important; line-height:1.4em; }
+    }
+
     </style>
     """, unsafe_allow_html=True)
