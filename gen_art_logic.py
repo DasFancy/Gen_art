@@ -343,7 +343,6 @@ def show_gen_art():
 
         return img
 
-    # apply_custom_styling()
     with st.sidebar:
         
         st.header("Controls")
@@ -392,6 +391,7 @@ def show_gen_art():
         overlay = st.selectbox("Choose overlay", ["None", "Stars", "Grain", "VanGogh", "Scene"], index=0, key="overlay_select")
 
         generate = st.button("✨ Generate Art", type="primary")
+        surprise = st.button("🎲 Surprise Me")
 
     # Pack params
     params = FlowFieldParams(
@@ -436,6 +436,15 @@ def show_gen_art():
             prng_seed = int(hashlib.sha256(prng_seed_text.encode()).hexdigest()[:16], 16)
 
     prng_provider = PRNGProvider(seed=prng_seed)
+    #------------------------------Surprise addition ---------------------------------------------------------
+    if surprise:
+        params.particles = random.choice([12000, 18000, 26000, 35000])
+        params.steps     = random.choice([60, 80, 120, 160])
+        params.step_size = random.choice([0.6, 0.9, 1.2, 1.6])
+        params.jitter    = random.choice([0.2, 0.4, 0.7, 1.0])
+        params.line_alpha = random.choice([12, 20, 30, 45])
+        overlay = random.choice(["None", "Stars", "Texture", "Van Gogh", "Scene"])
+        generate = True   # reuse the existing generation path
 
     if generate:
         if mode == "QRNG" and not qrng_provider:
