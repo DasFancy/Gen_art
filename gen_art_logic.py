@@ -197,9 +197,8 @@ def show_gen_art():
             if animate and (step % every == 0 or step == p.steps - 1):
                 prev = img.convert("RGB").resize((W // 2, H // 2))
                 frame.image(prev, use_container_width=True)
+                time.sleep(0.03)   # ← lets the frame flush to the browser
 
-        if animate and frame is not None:
-            frame.empty()
 
         return img
 
@@ -505,16 +504,16 @@ def show_gen_art():
                     st.download_button("Download PRNG PNG", data=bio_p.getvalue(), file_name=f"prng_art_{seed_p[:12]}.png", mime="image/png")
             else:
                 provider = qrng_provider if mode == "QRNG" else prng_provider
-                with st.spinner("Painting in progress ... please wait"):
-                    img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay, animate=True)   # ← add animate=True
-                    if overlay == "Stars":
-                        img = overlay_stars(img, provider)
-                    elif overlay == "Grain":
-                        img = overlay_texture(img)
-                    elif overlay == "VanGogh":
-                        img = overlay_vangogh(img, provider, coeffs)
-                    elif overlay == "Scene":
-                            img = overlay_scene(img, provider, coeffs)
+                # with st.spinner("Painting in progress ... please wait"):
+                img, seed_hex, pal, coeffs = make_image_with_provider(provider, mode, overlay, animate=True)   # ← add animate=True
+                if overlay == "Stars":
+                    img = overlay_stars(img, provider)
+                elif overlay == "Grain":
+                    img = overlay_texture(img)
+                elif overlay == "VanGogh":
+                    img = overlay_vangogh(img, provider, coeffs)
+                elif overlay == "Scene":
+                        img = overlay_scene(img, provider, coeffs)
                 bio = io.BytesIO()
                 img = img.convert("RGB")
                 img.save(bio, format="PNG")
