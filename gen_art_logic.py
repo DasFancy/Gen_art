@@ -391,7 +391,7 @@ def show_gen_art():
         overlay = st.selectbox("Choose overlay", ["None", "Stars", "Grain", "VanGogh", "Scene"], index=0, key="overlay_select")
 
         generate = st.button("✨ Generate Art", type="primary")
-        surprise = st.button("🎲 Surprise Me")
+        surprise = st.button("🎲 Surprise Me", type="primary")
 
     # Pack params
     params = FlowFieldParams(
