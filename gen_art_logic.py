@@ -9,7 +9,7 @@ from typing import List, Tuple, Optional
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 import requests
-from utils.qrng_helper import get_qrng_bits_from_api
+from utils.qrng_helper import get_qrng_bits_with_source
 from utils.css_styling import apply_custom_styling
 
 
@@ -44,16 +44,14 @@ def show_gen_art():
             return self.rng.integers(0, 256, size=n, dtype=np.uint8).tobytes()
 
 
-    def get_qrng_bytes(n_bytes: int) -> bytes:
-        n_bits = n_bytes * 8
-        bitstring = get_qrng_bits_from_api(n_bits)
-        # Convert bitstring -> integer -> bytes
-        return int(bitstring, 2).to_bytes(n_bytes, "big")
-
-
     class QRNGProvider(RandomnessProvider):
+        def __init__(self):
+            self.used_fallback = False
+
         def get_bytes(self, n: int) -> bytes:
-            return get_qrng_bytes(n)
+            bitstring, from_qrng = get_qrng_bits_with_source(n * 8)
+            self.used_fallback |= not from_qrng
+            return int(bitstring, 2).to_bytes(n, "big")
     # ---------------------------
     # Utility: Palette & Hashing
     # ---------------------------
@@ -480,8 +478,10 @@ def show_gen_art():
                         bio_q = io.BytesIO()
                         img_q = img_q.convert("RGB")
                         img_q.save(bio_q, format="PNG")
-                        st.image(img_q, caption=f"Seed: {seed_q[:16]}… (SHA-256)")
-                        st.download_button("Download QRNG PNG", data=bio_q.getvalue(), file_name=f"qrng_art_{seed_q[:12]}.png", mime="image/png")
+                        source = "QRNG (local PRNG fallback used)" if qrng_provider.used_fallback else "QRNG"
+                        prefix = "qrng_fallback" if qrng_provider.used_fallback else "qrng"
+                        st.image(img_q, caption=f"{source} — Seed: {seed_q[:16]}… (SHA-256)")
+                        st.download_button(f"Download {source} PNG", data=bio_q.getvalue(), file_name=f"{prefix}_art_{seed_q[:12]}.png", mime="image/png")
                     except Exception as e:
                         st.exception(e)
                 with col2:
@@ -517,7 +517,12 @@ def show_gen_art():
                 bio = io.BytesIO()
                 img = img.convert("RGB")
                 img.save(bio, format="PNG")
-                st.image(img, caption=f"Seed: {seed_hex[:16]}… (SHA-256)")
-                st.download_button("Download PNG", data=bio.getvalue(), file_name=f"{mode.lower()}_art_{seed_hex[:12]}.png", mime="image/png")
+                source = mode
+                prefix = mode.lower()
+                if mode == "QRNG" and qrng_provider.used_fallback:
+                    source = "QRNG (local PRNG fallback used)"
+                    prefix = "qrng_fallback"
+                st.image(img, caption=f"{source} — Seed: {seed_hex[:16]}… (SHA-256)")
+                st.download_button("Download PNG", data=bio.getvalue(), file_name=f"{prefix}_art_{seed_hex[:12]}.png", mime="image/png")
 
 

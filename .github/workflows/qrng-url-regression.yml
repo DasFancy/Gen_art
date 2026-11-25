@@ -1,0 +1,29 @@
+name: QRNG URL regression (isolated fix branch)
+on:
+  push:
+    branches:
+      - 'fix/qrng-url-regression-20261125'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install app test dependencies
+        run: python -m pip install streamlit numpy pillow requests gspread google-auth
+      - name: Run offline QRNG and art generation tests
+        run: |
+          mkdir -p "$RUNNER_TEMP/gen-art-test/utils" "$RUNNER_TEMP/gen-art-test/tests"
+          cp main_page.py gen_art_logic.py "$RUNNER_TEMP/gen-art-test/"
+          cp utils/*.py "$RUNNER_TEMP/gen-art-test/utils/"
+          cp tests/test_qrng_url.py "$RUNNER_TEMP/gen-art-test/tests/"
+          cd "$RUNNER_TEMP/gen-art-test"
+          python -m compileall -q main_page.py gen_art_logic.py utils
+          python -m unittest discover -s tests -v
