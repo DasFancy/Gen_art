@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
 
@@ -69,6 +70,13 @@ class QRNGURLTests(unittest.TestCase):
         self.warning.assert_called()
         self.post.assert_not_called()
 
+    def test_missing_gcp_config_falls_back(self):
+        self.secrets.clear()
+        bits, qrng = helper.get_qrng_bits_with_source(64)
+        self.assertEqual(len(bits), 64)
+        self.assertFalse(qrng)
+        self.post.assert_not_called()
+
     def test_sheet_failure_falls_back(self):
         self.authorize.side_effect = RuntimeError("Sheet offline")
         bits, qrng = helper.get_qrng_bits_with_source(64)
@@ -118,7 +126,7 @@ class ArtIntegrationTests(unittest.TestCase):
              patch.object(requests, "post", side_effect=post), \
              patch.object(st, "image") as image, \
              patch.object(st, "download_button") as download:
-            at = AppTest.from_file("main_page.py", default_timeout=60).run()
+            at = AppTest.from_file(str(Path(__file__).resolve().parents[1] / "main_page.py"), default_timeout=60).run()
             self.assertEqual(len(at.exception), 0, str(at.exception))
             at.number_input[0].set_value(512)
             at.number_input[1].set_value(512)
