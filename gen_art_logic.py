@@ -551,5 +551,5 @@ def show_gen_art():
                     data=bio.getvalue(),
                     file_name=f"{prefix}_art_{seed_hex[:12]}.png",
                     mime="image/png"
-
+                )
 
